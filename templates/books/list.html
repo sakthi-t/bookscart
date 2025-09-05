@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Books - Bookscart{% endblock %}
+
+{% block content %}
+<h1>All Books</h1>
+
+<div class="row">
+  {% for book in books %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        {% if book.image %}
+          <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}">
+        {% else %}
+          <img src="https://picsum.photos/400/250?random={{ forloop.counter }}" class="card-img-top" alt="{{ book.title }}">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ book.title }}</h5>
+          <p class="card-text text-muted">{{ book.author }}</p>
+          <p class="card-text"><strong>₹{{ book.price }}</strong></p>
+          {% if book.is_in_stock %}
+            <span class="badge bg-success mb-2">In stock ({{ book.stock }})</span>
+          {% else %}
+            <span class="badge bg-danger mb-2">Out of stock</span>
+          {% endif %}
+          <div class="mt-auto">
+            <a href="{{ book.get_absolute_url }}" class="btn btn-outline-primary btn-sm">View</a>
+            {% if request.user.is_authenticated and book.is_in_stock %}
+              <form method="post" action="{% url 'books:add_to_cart' book.slug %}" class="d-inline-block ms-2">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit" class="btn btn-primary btn-sm">Add to cart</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col">No books available.</div>
+  {% endfor %}
+</div>
+
+
+{# Pagination controls #}
+{% if paginator.num_pages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+  <ul class="pagination justify-content-center">
+
+    {# Previous page button #}
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if qs_params %}{{ qs_params }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+          &laquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {# Previous window "..." if exists #}
+    {% if has_prev_window %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if qs_params %}{{ qs_params }}&{% endif %}page={{ prev_window_page }}">…</a>
+      </li>
+    {% endif %}
+
+    {# Page numbers in current 5-page window #}
+    {% for p in page_range %}
+      {% if p == page_obj.number %}
+        <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?{% if qs_params %}{{ qs_params }}&{% endif %}page={{ p }}">{{ p }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {# Next window "..." if exists #}
+    {% if has_next_window %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if qs_params %}{{ qs_params }}&{% endif %}page={{ next_window_page }}">…</a>
+      </li>
+    {% endif %}
+
+    {# Next page button #}
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if qs_params %}{{ qs_params }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next">
+          &raquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} — Bookscart{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    {% if book.image %}
+      <img src="{{ book.image.url }}" class="img-fluid" alt="{{ book.title }}">
+    {% else %}
+      <img src="https://picsum.photos/400/500?random=1" class="img-fluid" alt="{{ book.title }}">
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <h2>{{ book.title }}</h2>
+    {% if book.author %}<p class="text-muted">by {{ book.author }}</p>{% endif %}
+    <p><strong>Price:</strong> ₹{{ book.price }}</p>
+
+    <p>{{ book.description|linebreaks }}</p>
+
+    {% if book.is_in_stock %}
+      <p><span class="badge bg-success">In stock ({{ book.stock }})</span></p>
+
+      {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'books:add_to_cart' book.slug %}" class="row g-2 align-items-center">
+          {% csrf_token %}
+          <div class="col-auto">
+            <label for="quantity" class="visually-hidden">Quantity</label>
+            <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ book.stock }}">
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary">Add to cart</button>
+          </div>
+        </form>
+      {% else %}
+        <p class="mt-2">You must <a href="{% url 'account_login' %}">log in</a> to add items to your cart.</p>
+      {% endif %}
+
+    {% else %}
+      <p><span class="badge bg-danger">Out of stock</span></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

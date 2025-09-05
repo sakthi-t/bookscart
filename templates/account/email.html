@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Email addresses — Bookscart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Email addresses</h4>
+
+        <div class="mb-3">
+          <h6 class="mb-2">Associated emails</h6>
+          <ul class="list-group mb-3">
+            {% for address in email_addresses %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  {{ address.email }}
+                  {% if address.verified %}
+                    <span class="badge bg-success ms-2">verified</span>
+                  {% else %}
+                    <span class="badge bg-warning ms-2">unverified</span>
+                  {% endif %}
+                </div>
+                <div class="btn-group btn-group-sm">
+                  {% if not address.verified %}
+                    <a class="btn btn-outline-primary" href="{% url 'account_confirm_email' %}?email={{ address.email }}">Resend</a>
+                  {% endif %}
+                  <a class="btn btn-outline-danger" href="{% url 'account_email' %}?action=remove&email={{ address.email }}">Remove</a>
+                </div>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">No email addresses associated.</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div>
+          <h6>Add new email</h6>
+          <form method="post" action="{% url 'account_email' %}">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              {{ form.email }}
+              <button class="btn btn-primary" type="submit">Add Email</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart — Bookscart{% endblock %}
+
+{% block content %}
+<h1>Your Cart</h1>
+
+{% if items %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Line total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in items %}
+        {% with it=row.item line_total=row.line_total %}
+        <tr>
+          <td><a href="{{ it.book.get_absolute_url }}">{{ it.book.title }}</a></td>
+          <td>₹{{ it.price_at_add }}</td>
+          <td>{{ it.quantity }}</td>
+          <td>₹{{ line_total }}</td>
+          <td>
+            <!-- For simplicity editing/removal handled later -->
+          </td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between">
+    <div>
+      <strong>Total:</strong> ₹{{ total }}
+    </div>
+    <div>
+      <a href="{% url 'orders:checkout' %}" class="btn btn-success">Checkout</a>
+    </div>
+  </div>
+{% else %}
+  <p>Your cart is empty.</p>
+{% endif %}
+{% endblock %}

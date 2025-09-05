@@ -1,0 +1,93 @@
+<div id="chat-widget">
+  <div id="chat-header">Taylor</div>
+  <div id="chat-body"></div>
+  <div id="chat-input">
+    <input type="text" id="chat-message" placeholder="Type a message..." />
+    <button id="chat-send">Send</button>
+  </div>
+</div>
+
+<style>
+#chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 14px;
+  z-index: 1000;
+}
+#chat-header {
+  background: #007bff;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+#chat-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+.message { margin-bottom: 8px; }
+.user { text-align: right; color: #333; }
+.bot { text-align: left; color: #007bff; }
+#chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+#chat-input input {
+  flex: 1;
+  border: none;
+  padding: 8px;
+}
+#chat-input button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const sendBtn = document.getElementById("chat-send");
+  const input = document.getElementById("chat-message");
+  const body = document.getElementById("chat-body");
+
+  function appendMessage(text, cls) {
+    const div = document.createElement("div");
+    div.classList.add("message", cls);
+    div.innerText = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  sendBtn.addEventListener("click", function() {
+    const msg = input.value.trim();
+    if (!msg) return;
+    appendMessage(msg, "user");
+    input.value = "";
+
+    fetch("{% url 'chatbot:chat_api' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "message=" + encodeURIComponent(msg)
+    })
+    .then(r => r.json())
+    .then(data => {
+      appendMessage(data.reply, "bot");
+    });
+  });
+});
+</script>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Sign In — Bookscart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Sign In</h4>
+        <p class="text-muted small mb-3">If you don't have an account, <a href="{% url 'account_signup' %}">sign up</a>.</p>
+
+        <form method="post" action="{% url 'account_login' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.login.id_for_label }}">Username or email</label>
+            {{ form.login }}
+            {% if form.login.errors %}
+              <div class="text-danger small mt-1">{{ form.login.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            <div class="form-text">
+              <a href="{% url 'account_reset_password' %}">Forgot your password?</a>
+            </div>
+            {% if form.password.errors %}
+              <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-flex align-items-center mb-3">
+            <div class="form-check">
+              {{ form.remember }}
+              <label class="form-check-label ms-1" for="{{ form.remember.id_for_label }}">Remember me</label>
+            </div>
+            <button type="submit" class="btn btn-primary ms-auto">Sign In</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

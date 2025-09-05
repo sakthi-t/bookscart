@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Bookscart{% endblock %}
+
+{% block content %}
+<div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="https://picsum.photos/1200/300?random=1" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="https://picsum.photos/1200/300?random=2" class="d-block w-100" alt="...">
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col">
+    <h2>Welcome to Bookscart</h2>
+    <p>This website sells fiction and non-fiction books. Browse our collection and add to cart. Login is required to add items to cart.</p>
+  </div>
+</div>
+
+<div class="row">
+  {% for book in featured %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        {% if book.image %}
+          <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}">
+        {% else %}
+          <img src="https://picsum.photos/400/250?random={{ forloop.counter }}" class="card-img-top" alt="{{ book.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ book.title }}</h5>
+          <p class="card-text">{{ book.author }}</p>
+          <p class="card-text"><strong>₹{{ book.price }}</strong></p>
+          <a href="{{ book.get_absolute_url }}" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col">No books yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  {% include "chatbot/chat.html" %}
+{% endblock %}
