@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import environ
 import os
 from pathlib import Path
+import dj_database_url
+
 
 from apps import accounts, books, chatbot, orders, recommender
 
@@ -19,7 +21,7 @@ from apps import accounts, books, chatbot, orders, recommender
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load .env
-env = environ.Env(DEBUG=(bool, True))
+env = environ.Env(DEBUG=(bool, False))
 # Look for .env in project root
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
@@ -31,7 +33,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = "django-insecure-50x&)i2ew(68fwtu)e!%j(y8o6g2jgt3t@qno!n^cz5yqwca#l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
@@ -104,6 +106,10 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
+}
+
+DATABASES = {
+    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
 
